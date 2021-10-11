@@ -1,27 +1,29 @@
-﻿using EventsPubSub;
+﻿using PubbieSubbie;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
-namespace EventsPubSubTest
+namespace PubbieSubbieRunner
 {
-    public class CheesyHandler : ISubscriber<CheeseEvent>
+    public class CheesyHandler : ISubscriber<CheeseMessage>
     {
         private readonly ILogger<CheesyHandler> _logger;
-        private readonly EventsNexus _eventsNexus;
+        private readonly MessageNexus _eventsNexus;
 
-        public CheesyHandler(ILogger<CheesyHandler> logger, EventsNexus eventsNexus)
+        public CheesyHandler(ILogger<CheesyHandler> logger, MessageNexus eventsNexus)
         {
             _logger = logger;
             _eventsNexus = eventsNexus;
         }
 
-        public Task HandleEventAsync(CheeseEvent cheeseEvent)
+        public async Task HandleEventAsync(CheeseMessage cheeseEvent)
         {
-            _logger.LogInformation("The cheese was {CheeseType}", cheeseEvent.CheeseType);
+            _logger.LogInformation("The cheese was {CheeseType} at {Timestamp}", cheeseEvent.CheeseType, DateTime.Now.ToString("ss.fffffff"));
             if(cheeseEvent.CheeseType == "Gouda")
-            _eventsNexus.PublishEvent(new CheeseEvent("Brie"));
-
-            return Task.CompletedTask;
+            {
+                await Task.Delay(100);
+                await _eventsNexus.PublishEventAsync(new CheeseMessage("Brie"));
+            }
         }
     }
 }

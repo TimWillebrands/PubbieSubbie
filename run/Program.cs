@@ -1,10 +1,9 @@
-﻿using EventsPubSub;
+﻿using PubbieSubbie;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
-namespace EventsPubSubTest
+namespace PubbieSubbieRunner
 {
     class Program
     {
@@ -12,9 +11,9 @@ namespace EventsPubSubTest
         {
             //setup our DI
             var serviceProvider = new ServiceCollection()
-                .AddSingleton<EventsNexus>()
-                .AddTransient<ISubscriber<CheeseEvent>, CheesyHandler>()
-                .AddScoped<ISubscriber<DriverEvent>, SomeDriverOrWhatever>()
+                .AddSingleton<MessageNexus>()
+                .AddTransient<ISubscriber<CheeseMessage>, CheesyHandler>()
+                .AddScoped<ISubscriber<DriverMessage>, SomeDriverOrWhatever>()
                 .AddLogging(loggerBuilder =>
                 {
                     loggerBuilder.ClearProviders();
@@ -33,13 +32,13 @@ namespace EventsPubSubTest
 
         private static async Task DoStuff(ServiceProvider serviceProvider)
         {
-            var eventsNexus = serviceProvider.GetService<EventsNexus>();
+            var eventsNexus = serviceProvider.GetService<MessageNexus>();
 
                 while (true)
                 {
-                    eventsNexus.PublishEvent(new CheeseEvent("Gouda"));
+                    await eventsNexus.PublishEventAsync(new CheeseMessage("Gouda"));
                     await Task.Delay(1000);
-                    eventsNexus.PublishEvent(new DriverEvent(69, "beep bitshift bop"));
+                    await eventsNexus.PublishEventAsync(new DriverMessage(69, "beep bitshift bop"));
                     await Task.Delay(1000);
                 }
         }

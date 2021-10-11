@@ -1,10 +1,11 @@
-﻿using EventsPubSub;
+﻿using PubbieSubbie;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
-namespace EventsPubSubTest
+namespace PubbieSubbieRunner
 {
-    internal class SomeDriverOrWhatever : ISubscriber<DriverEvent>
+    internal class SomeDriverOrWhatever : ISubscriber<DriverMessage>
     {
         private readonly ILogger<SomeDriverOrWhatever> _logger;
 
@@ -13,9 +14,9 @@ namespace EventsPubSubTest
             _logger = logger;
         }
 
-        public Task HandleEventAsync(DriverEvent driverEvent)
+        public Task HandleEventAsync(DriverMessage driverEvent)
         {
-            _logger.LogInformation("Driver {DriverId} goes {DriverNoise}", driverEvent.DriverId, driverEvent.Stuff);
+            _logger.LogInformation("Driver {DriverId} goes {DriverNoise} at {Timestamp}", driverEvent.DriverId, driverEvent.Stuff, DateTime.Now.ToString("ss.fffffff"));
             return Task.CompletedTask;
         }
     }
